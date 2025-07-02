@@ -6,8 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface // Importe Surface, comum para o fundo principal
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.zooid.ui.theme.ZooIdTheme
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.zooid.screens.QuizScreen
+import com.example.zooid.ui.ZooIdTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,10 +22,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ZooIdTheme {
+                val navController = rememberNavController()
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    MainScreen()
+                    AppNavHost(navController = navController)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun AppNavHost(navController: NavHostController) {
+    NavHost(navController, startDestination = "main") {
+        composable("main") {
+            MainScreen(
+                onStartQuiz = { title ->
+                    navController.navigate("quiz/$title")
+                }
+            )
+        }
+        composable("quiz/{title}") { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            QuizScreen(title)
         }
     }
 }

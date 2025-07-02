@@ -8,17 +8,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.zooid.components.AppSearchBar
-import com.example.zooid.components.AppTopBar
-import com.example.zooid.ui.theme.ZooIdTheme
-import com.example.zooid.components.QuizPackCard
 import com.example.zooid.components.QuizPack
+import com.example.zooid.components.QuizPackCard
+import com.example.zooid.ui.ZooIdTheme
+import com.example.zooid.components.AppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(onStartQuiz: (String) -> Unit) {
     var searchQuery by remember { mutableStateOf("") }
 
     // Lista de pacotes fictícios
@@ -64,10 +64,7 @@ fun MainScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
+            LazyColumn {
                 items(filteredPacks) { pack ->
                     QuizPackCard(
                         title = pack.title,
@@ -75,9 +72,7 @@ fun MainScreen() {
                         speciesCount = pack.speciesCount,
                         imageResId = pack.imageResId,
                         imageSizeDp = pack.imageSizeDp,
-                        onStartClick = {
-                            // ação ao iniciar o quiz
-                        }
+                        onStartClick = { onStartQuiz(pack.title) }
                     )
                 }
             }
@@ -90,6 +85,6 @@ fun MainScreen() {
 @Composable
 fun HomeScreenPreview() {
     ZooIdTheme {
-        MainScreen()
+        MainScreen(onStartQuiz = {})
     }
 }

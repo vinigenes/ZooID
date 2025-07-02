@@ -1,14 +1,11 @@
 package com.example.zooid.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -24,15 +21,15 @@ fun AppTopBar() {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo App",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .size(200.dp),
+                modifier = Modifier.size(200.dp),
                 contentScale = ContentScale.Fit
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Black
-        )
+        ),
+        navigationIcon = {},
+        actions = {}
     )
 }
+

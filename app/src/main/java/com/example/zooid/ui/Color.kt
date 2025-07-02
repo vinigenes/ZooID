@@ -1,4 +1,4 @@
-package com.example.zooid.ui.theme
+package com.example.zooid.ui
 
 import androidx.compose.ui.graphics.Color
 
