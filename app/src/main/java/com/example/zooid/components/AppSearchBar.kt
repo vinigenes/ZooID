@@ -108,13 +108,4 @@ fun AppSearchBar(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun AppSearchBarPreview() {
-    ZooIdTheme {
-        AppSearchBar(
-            searchQuery = "",
-            onSearchQueryChange = {}
-        )
-    }
-}
+

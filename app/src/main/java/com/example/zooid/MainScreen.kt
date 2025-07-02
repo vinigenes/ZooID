@@ -31,8 +31,8 @@ fun MainScreen(onStartQuiz: (String) -> Unit) {
             imageSizeDp = 60
         ),
         QuizPack(
-            "Aves da Caatinga",
-            "Identifique as aves de interesse do PPBIO.",
+            "Aves do PPBIO",
+            "Identifique as aves de interesse do Programa de Pesquisa em Biodiversidade.",
             100,
             imageResId = R.drawable.ppbio,
             imageSizeDp = 60
