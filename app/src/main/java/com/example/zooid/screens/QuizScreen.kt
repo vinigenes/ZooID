@@ -11,14 +11,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.example.zooid.components.QuizName
 import com.example.zooid.data.caatingaQuestions
+import com.example.zooid.data.familyOrnitolabQuestions
 import com.example.zooid.data.ppbioQuestions
 import com.example.zooid.model.Question
 
 @Composable
-fun QuizScreen(title: String) {
-    val questions: List<Question> = when (title) {
-        "Aves da Caatinga" -> caatingaQuestions
-        "Aves da PPBIO" -> ppbioQuestions
+fun QuizScreen(id: Int) {
+    val questions: List<Question> = when (id) {
+        1 -> caatingaQuestions
+        2 -> ppbioQuestions
+        3-> familyOrnitolabQuestions
         else -> emptyList()
     }
 
@@ -26,7 +28,6 @@ fun QuizScreen(title: String) {
     var score by remember { mutableStateOf(0) }
     var isFinished by remember { mutableStateOf(false) }
 
-    // Detecta se o teclado está aberto
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
 
     Column(
@@ -37,9 +38,8 @@ fun QuizScreen(title: String) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(48.dp)) // espaço inicial no topo
+        Spacer(modifier = Modifier.height(48.dp))
 
-        // Mostrar o texto apenas se o teclado NÃO estiver aberto
         if (!imeVisible) {
             Text(
                 text = "Digite o nome científico:",
@@ -56,7 +56,6 @@ fun QuizScreen(title: String) {
                 Text("Nenhuma questão disponível", style = MaterialTheme.typography.bodyLarge)
             }
             isFinished -> {
-                // Tela de resultados
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
@@ -95,3 +94,4 @@ fun QuizScreen(title: String) {
         }
     }
 }
+

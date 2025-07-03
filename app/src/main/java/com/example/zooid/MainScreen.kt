@@ -1,5 +1,7 @@
 package com.example.zooid
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +10,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.zooid.components.AppSearchBar
@@ -18,12 +23,12 @@ import com.example.zooid.components.AppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onStartQuiz: (String) -> Unit) {
+fun MainScreen(onStartQuiz: (Int) -> Unit) {
     var searchQuery by remember { mutableStateOf("") }
 
-    // Lista de pacotes fictícios
     val quizPacks = listOf(
         QuizPack(
+            id = 1,
             "Aves da Caatinga",
             "Identifique as aves de um bioma singular do Brasil.",
             100,
@@ -31,15 +36,23 @@ fun MainScreen(onStartQuiz: (String) -> Unit) {
             imageSizeDp = 60
         ),
         QuizPack(
+            id = 2,
             "Aves do PPBIO",
             "Identifique as aves de interesse do Programa de Pesquisa em Biodiversidade.",
             100,
             imageResId = R.drawable.ppbio,
             imageSizeDp = 60
         ),
+        QuizPack(
+            id = 3,
+            title = "Famílias de Aves ",
+            description = "Identifique as famílias das aves presentes na coleção do Ornitolab",
+            speciesCount = 20,
+            imageResId = R.drawable.logoornitolab,
+            imageSizeDp = 60
+        )
     )
 
-    // Filtro opcional (não obrigatório agora)
     val filteredPacks = quizPacks.filter {
         it.title.contains(searchQuery, ignoreCase = true)
     }
@@ -49,31 +62,47 @@ fun MainScreen(onStartQuiz: (String) -> Unit) {
             AppTopBar()
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+                .background(Color.White) // Fundo preto por trás da imagem
         ) {
-            AppSearchBar(
-                searchQuery = searchQuery,
-                onSearchQueryChange = { newQuery -> searchQuery = newQuery }
+            // Imagem de fundo
+            Image(
+                painter = painterResource(id = R.drawable.background),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Conteúdo da tela
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                AppSearchBar(
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { newQuery -> searchQuery = newQuery }
+                )
 
-            LazyColumn {
-                items(filteredPacks) { pack ->
-                    QuizPackCard(
-                        title = pack.title,
-                        description = pack.description,
-                        speciesCount = pack.speciesCount,
-                        imageResId = pack.imageResId,
-                        imageSizeDp = pack.imageSizeDp,
-                        onStartClick = { onStartQuiz(pack.title) }
-                    )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn {
+                    items(filteredPacks) { pack ->
+                        QuizPackCard(
+                            id = pack.id,
+                            title = pack.title,
+                            description = pack.description,
+                            speciesCount = pack.speciesCount,
+                            imageResId = pack.imageResId,
+                            imageSizeDp = pack.imageSizeDp,
+                            onStartClick = { onStartQuiz(pack.id) }
+                        )
+                    }
                 }
             }
         }

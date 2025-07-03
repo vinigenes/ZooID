@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun QuizPackCard(
+    id: Int,
     title: String,
     description: String,
     speciesCount: Int,
