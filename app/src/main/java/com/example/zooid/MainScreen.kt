@@ -20,6 +20,7 @@ import com.example.zooid.components.QuizPack
 import com.example.zooid.components.QuizPackCard
 import com.example.zooid.ui.ZooIdTheme
 import com.example.zooid.components.AppTopBar
+import com.example.zooid.data.familyOrnitolabQuestions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +48,7 @@ fun MainScreen(onStartQuiz: (Int) -> Unit) {
             id = 3,
             title = "Famílias de Aves ",
             description = "Identifique as famílias das aves presentes na coleção do Ornitolab",
-            speciesCount = 20,
+            speciesCount = familyOrnitolabQuestions.size,
             imageResId = R.drawable.logoornitolab,
             imageSizeDp = 60
         )
@@ -67,14 +68,7 @@ fun MainScreen(onStartQuiz: (Int) -> Unit) {
                 .fillMaxSize()
                 .background(Color.White) // Fundo preto por trás da imagem
         ) {
-            // Imagem de fundo
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-
+            
             // Conteúdo da tela
             Column(
                 modifier = Modifier

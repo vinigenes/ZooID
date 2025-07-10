@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.ui.platform.LocalDensity
 
 @Composable
 fun QuizName(
@@ -48,7 +49,6 @@ fun QuizName(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    // Animações suaves
     val animatedLabelSize by animateFloatAsState(
         targetValue = if (text.isNotEmpty() || isFocused) 12f else 16f,
         animationSpec = tween(150)
@@ -58,17 +58,37 @@ fun QuizName(
         animationSpec = tween(150)
     )
 
-    Box(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+    val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+
+    // Fator de escala para imagem, animado de 1f para 0.5f
+    val scale by animateFloatAsState(
+        targetValue = if (imeVisible) 0.5f else 1f,
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    // Define tamanhos base para largura e altura
+    val baseWidth = 320.dp
+    val baseHeight = 220.dp
+
+    // Calcula largura e altura animadas aplicando o scale
+    val animatedWidth = with(LocalDensity.current) { (baseWidth.toPx() * scale).toDp() }
+    val animatedHeight = with(LocalDensity.current) { (baseHeight.toPx() * scale).toDp() }
+
+    val scrollState = rememberScrollState()
+    LaunchedEffect(Unit) {
+        scrollState.scrollTo(150)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .navigationBarsPadding()
     ) {
-        // Conteúdo principal com scroll (imagem + input)
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .fillMaxSize()
-                .navigationBarsPadding()
-                .verticalScroll(rememberScrollState()),
+                .weight(1f)
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -76,12 +96,12 @@ fun QuizName(
                 contentDescription = "Imagem para quiz",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
+                    .width(animatedWidth)
+                    .height(animatedHeight)
                     .clip(RoundedCornerShape(16.dp))
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Box(
                 modifier = Modifier
@@ -91,13 +111,12 @@ fun QuizName(
                         color = when {
                             isAnswered && isCorrect -> Color(0xFF4CAF50)
                             isAnswered && !isCorrect -> Color(0xFFF44336)
-                            else -> Color(0xFFFFFFFF)
+                            else -> Color.White
                         },
                         shape = RoundedCornerShape(12.dp)
                     )
             ) {
                 Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                    // Label flutuante
                     Text(
                         text = "Nome científico",
                         color = Color.LightGray,
@@ -110,8 +129,8 @@ fun QuizName(
 
                     BasicTextField(
                         value = text,
-                        onValueChange = { if (!isAnswered) text = it },  // evita alterar após responder
-                        enabled = !isAnswered,  // desabilita o campo depois de enviar
+                        onValueChange = { if (!isAnswered) text = it },
+                        enabled = !isAnswered,
                         textStyle = LocalTextStyle.current.copy(
                             color = Color.Black,
                             fontSize = 16.sp
@@ -135,22 +154,18 @@ fun QuizName(
             }
         }
 
-        // Texto de feedback e botão fixos na parte inferior, sobem com teclado
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .navigationBarsPadding()
-                .imePadding()
-                .padding(horizontal = 8.dp, vertical = 12.dp),
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (isAnswered) {
                 Text(
-                    text = if (isCorrect) "Resposta correta!"
-                    else "Resposta incorreta. O correto é: $correctAnswer",
+                    text = if (isCorrect) "Resposta correta!" else "Resposta incorreta. O correto é: $correctAnswer",
                     color = if (isCorrect) Color(0xFF4CAF50) else Color(0xFFF44336),
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
@@ -167,10 +182,16 @@ fun QuizName(
                         onNext()
                     }
                 },
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
             ) {
                 Text(if (!isAnswered) "ENVIAR" else "PRÓXIMO")
             }
 
-            Spacer(modifier = Modifier.height(8.dp)) // Espaço extra para evitar colisão com borda
-        }}}
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+
+

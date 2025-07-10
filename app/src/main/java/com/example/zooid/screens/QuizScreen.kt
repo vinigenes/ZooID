@@ -1,6 +1,8 @@
 package com.example.zooid.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,15 +15,25 @@ import com.example.zooid.components.QuizName
 import com.example.zooid.data.caatingaQuestions
 import com.example.zooid.data.familyOrnitolabQuestions
 import com.example.zooid.data.ppbioQuestions
-import com.example.zooid.model.Question
 
 @Composable
-fun QuizScreen(id: Int) {
-    val questions: List<Question> = when (id) {
-        1 -> caatingaQuestions
-        2 -> ppbioQuestions
-        3-> familyOrnitolabQuestions
-        else -> emptyList()
+fun QuizScreen(
+    id: Int,
+    onExit: () -> Unit
+) {
+    val questions = remember(id) {
+        when (id) {
+            1 -> caatingaQuestions.shuffled()
+            2 -> ppbioQuestions.shuffled()
+            3 -> familyOrnitolabQuestions.shuffled()
+            else -> emptyList()
+        }
+    }
+
+    // Texto customizado para cada pacote
+    val labelText = when (id) {
+        3 -> "Digite o nome científico da família:"
+        else -> "Digite o nome científico:"
     }
 
     var currentIndex by remember { mutableStateOf(0) }
@@ -40,10 +52,32 @@ fun QuizScreen(id: Int) {
     ) {
         Spacer(modifier = Modifier.height(48.dp))
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(onClick = onExit) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Sair"
+                )
+            }
+        }
+
+        LinearProgressIndicator(
+            progress = ((currentIndex + 1).toFloat() / questions.size),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
         if (!imeVisible) {
             Text(
-                text = "Digite o nome científico:",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                text = labelText,
+                style = MaterialTheme.typography.titleLarge.copy(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
@@ -78,20 +112,28 @@ fun QuizScreen(id: Int) {
             else -> {
                 val question = questions[currentIndex]
 
-                QuizName(
-                    imageResId = question.imageResId,
-                    correctAnswer = question.correctAnswer,
-                    onAnswerCorrect = { score++ },
-                    onNext = {
-                        if (currentIndex + 1 >= questions.size) {
-                            isFinished = true
-                        } else {
-                            currentIndex++
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    QuizName(
+                        imageResId = question.imageResId,
+                        correctAnswer = question.correctAnswer,
+                        onAnswerCorrect = { score++ },
+                        onNext = {
+                            if (currentIndex + 1 >= questions.size) {
+                                isFinished = true
+                            } else {
+                                currentIndex++
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
 }
+
 

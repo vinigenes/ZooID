@@ -41,12 +41,14 @@ fun AppNavHost(navController: NavHostController) {
             MainScreen(
                 onStartQuiz = { id ->
                     navController.navigate("quiz/$id")
+
                 }
             )
         }
         composable("quiz/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: -1
-            QuizScreen(id)
+            QuizScreen(id = id, onExit = { navController.popBackStack() })
+
         }
     }
 }
