@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.zooid.navigation.AppNavHost
 import com.example.zooid.screens.QuizScreen
 import com.example.zooid.ui.ZooIdTheme
 import java.net.URLDecoder
@@ -34,21 +35,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun AppNavHost(navController: NavHostController) {
-    NavHost(navController, startDestination = "main") {
-        composable("main") {
-            MainScreen(
-                onStartQuiz = { id ->
-                    navController.navigate("quiz/$id")
-
-                }
-            )
-        }
-        composable("quiz/{id}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: -1
-            QuizScreen(id = id, onExit = { navController.popBackStack() })
-
-        }
-    }
-}
