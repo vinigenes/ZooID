@@ -2,11 +2,12 @@ package com.example.zooid.data
 
 import com.example.zooid.R
 import com.example.zooid.model.Question
+import com.example.zooid.model.QuizType
 
 val caatingaQuestions = listOf(
     Question(
         imageResId = R.drawable.carcara,
-        correctAnswer = "Carcara plancus"
+        correctAnswer = "Caracara plancus"
     ),
     Question(
         imageResId = R.drawable.thraupis,
@@ -15,12 +16,11 @@ val caatingaQuestions = listOf(
 )
 
 val ppbioQuestions = listOf(
-    Question(
-        imageResId = R.drawable.carcara,
-        correctAnswer = "Turdus rufiventris"
-    ),
-
-)
+    Question(imageResId = R.drawable.cypseloides_niger_apodidae, correctAnswer = "Apodidae", quizType = QuizType.MULTIPLE),
+    Question(imageResId = R.drawable.numida_meleagris_numididae, correctAnswer = "Numididae"),
+    Question(imageResId = R.drawable.nyctibius_griseus_nuctibiidae, correctAnswer = "Nyctibiidae"),
+    Question(imageResId = R.drawable.penelope_ochrogaster_cracidae, correctAnswer = "Cracidae"),
+    )
 
 val familyOrnitolabQuestions = listOf(
     Question(imageResId = R.drawable.cypseloides_niger_apodidae, correctAnswer = "Apodidae"),

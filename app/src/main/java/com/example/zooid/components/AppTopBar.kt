@@ -28,13 +28,13 @@ fun AppTopBar() {
                 Image(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = "Logo App",
-                    modifier = Modifier.size(150.dp),
+                    modifier = Modifier.size(70.dp),
                     contentScale = ContentScale.Fit
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Black
+            containerColor = Color.Transparent
         ),
         navigationIcon = {},
         actions = {}

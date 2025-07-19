@@ -8,31 +8,57 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import com.example.zooid.components.QuizName
+import androidx.compose.ui.unit.dp
+import com.example.zooid.quiz.QuizName
+import com.example.zooid.quiz.QuizMultiple
 import com.example.zooid.data.caatingaQuestions
 import com.example.zooid.data.familyOrnitolabQuestions
 import com.example.zooid.data.ppbioQuestions
+import com.example.zooid.model.QuizType
+import androidx.compose.ui.unit.sp
+
 
 @Composable
 fun QuizScreen(
     id: Int,
     onExit: () -> Unit
 ) {
-    val questions = remember(id) {
+    val baseQuestions = remember(id) {
         when (id) {
-            1 -> caatingaQuestions.shuffled()
-            2 -> ppbioQuestions.shuffled()
-            3 -> familyOrnitolabQuestions.shuffled()
+            1 -> caatingaQuestions
+            2 -> ppbioQuestions
+            3 -> familyOrnitolabQuestions
             else -> emptyList()
         }
     }
 
-    // Texto customizado para cada pacote
+    val questions = remember(baseQuestions) {
+        baseQuestions.map { question ->
+            val randomType = if ((0..1).random() == 0) QuizType.TEXT else QuizType.MULTIPLE
+
+            if (randomType == QuizType.MULTIPLE) {
+                val wrongOptions = baseQuestions
+                    .filter { it.correctAnswer != question.correctAnswer }
+                    .shuffled()
+                    .take(3)
+                    .map { it.correctAnswer }
+
+                val allOptions = (wrongOptions + question.correctAnswer).shuffled()
+
+                question.copy(
+                    quizType = QuizType.MULTIPLE,
+                    options = allOptions
+                )
+            } else {
+                question.copy(quizType = QuizType.TEXT)
+            }
+        }.shuffled()
+    }
+
     val labelText = when (id) {
-        3 -> "Digite o nome científico da família:"
+        3 -> "Selecione o nome científico da família:"
         else -> "Digite o nome científico:"
     }
 
@@ -68,7 +94,7 @@ fun QuizScreen(
             progress = ((currentIndex + 1).toFloat() / questions.size),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = 4.dp),
             color = MaterialTheme.colorScheme.primary
         )
 
@@ -77,10 +103,10 @@ fun QuizScreen(
         if (!imeVisible) {
             Text(
                 text = labelText,
-                style = MaterialTheme.typography.titleLarge.copy(),
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp), // Aqui diminui a fonte
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = 4.dp),
                 textAlign = TextAlign.Start
             )
         }
@@ -118,22 +144,40 @@ fun QuizScreen(
                         .weight(1f),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    QuizName(
-                        imageResId = question.imageResId,
-                        correctAnswer = question.correctAnswer,
-                        onAnswerCorrect = { score++ },
-                        onNext = {
-                            if (currentIndex + 1 >= questions.size) {
-                                isFinished = true
-                            } else {
-                                currentIndex++
-                            }
+                    when (question.quizType) {
+                        QuizType.TEXT -> {
+                            QuizName(
+                                imageResId = question.imageResId,
+                                correctAnswer = question.correctAnswer,
+                                onAnswerCorrect = { score++ },
+                                onNext = {
+                                    if (currentIndex + 1 >= questions.size) {
+                                        isFinished = true
+                                    } else {
+                                        currentIndex++
+                                    }
+                                }
+                            )
                         }
-                    )
+                        QuizType.MULTIPLE -> {
+                            QuizMultiple(
+                                imageResId = question.imageResId,
+                                options = question.options,
+                                correctIndex = question.options.indexOf(question.correctAnswer)
+                                    .takeIf { it >= 0 } ?: 0,
+                                onAnswerCorrect = { score++ },
+                                onNext = {
+                                    if (currentIndex + 1 >= questions.size) {
+                                        isFinished = true
+                                    } else {
+                                        currentIndex++
+                                    }
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-
